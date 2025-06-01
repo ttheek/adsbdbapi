@@ -22,6 +22,9 @@ class AdsbdbAPI{
     async getAircraft(code) {
         try {
             const data = await this.apiRequest.get(`/aircraft/${code}`);
+            if (!data.response || data.response === "unknown aircraft") {
+                throw new Error("Unknown aircraft");
+            }
             return new Aircraft(data.response.aircraft);
         } catch (error) {
             console.error("Error fetching aircraft:", error);
@@ -42,7 +45,10 @@ class AdsbdbAPI{
         }
         const formattedCode = code.toUpperCase();
         try {
-            const data = await this.apiRequest.get(`/airline/${formattedCode}`);            
+            const data = await this.apiRequest.get(`/airline/${formattedCode}`); 
+            if (!data.response || data.response === "unknown airline") {
+                throw new Error("Unknown airline"); 
+            }          
             return new Airline(data.response[0]);
         } catch (error) {
             console.error("Error fetching airline:", error);
@@ -63,11 +69,66 @@ class AdsbdbAPI{
         }
         try {
             const data = await this.apiRequest.get(`/callsign/${callsign}`);
-            // console.log("Fetched callsign data:", data.response.flightroute);
+            if (!data.response || data.response === "unknown callsign") {
+                throw new Error("Unknown aircraft");
+            };
             
             return new Callsign(data.response.flightroute);
         } catch (error) {
             console.error("Error fetching callsign:", error);
+            throw error;
+        }
+    }
+
+    /**
+     * Converts a North American Mode-S code to its corresponding identifier.
+     *
+     * @async
+     * @param {string} code - The Mode-S code to be converted. Must be a 6-character string.
+     * @throws {Error} Throws an error if the code is invalid, not North American, or unknown.
+     * @returns {Promise<string>} The identifier corresponding to the given Mode-S code.
+     */
+    async modeStoN(code) {
+        if (!code || typeof code !== "string" || code.length !== 6) {
+            throw new Error("Invalid Mode-S code");
+        }
+        // Check if the Mode-S code prefix is North American
+        const prefix = code.substring(0, 2).toUpperCase();
+        const northAmericanPrefixes = ["A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9"];
+        if (!northAmericanPrefixes.includes(prefix)) {
+            throw new Error("Mode-S code is not North American");
+        }
+        try {
+            const data = await this.apiRequest.get(`/mode-s/${code}`); 
+            if (!data.response || data.response === "") {
+                throw new Error("Unknown Mode-S code"); 
+            }          
+            return data.response;
+        } catch (error) {
+            console.error("Error:", error);
+            throw error;
+        }
+    }
+
+    /**
+     * Converts an N-Number (aircraft registration number) to a Mode S code.
+     *
+     * @param {string} code - The N-Number to be converted. Must be a string starting with "N" and at least 3 characters long.
+     * @returns {Promise<string>} - A promise that resolves to the Mode S code corresponding to the given N-Number.
+     * @throws {Error} - Throws an error if the input is invalid, the N-Number is unknown, or if there is an issue with the API request.
+     */
+    async nNumberToModeS(code) {
+        if (!code || typeof code !== "string" || code.length < 3 || !/^N/i.test(code)) {
+            throw new Error("Invalid N-Number");
+        }
+        try {
+            const data = await this.apiRequest.get(`/n-number/${code}`); 
+            if (!data.response || data.response === "") {
+                throw new Error("Unknown N-Number"); 
+            }          
+            return data.response;
+        } catch (error) {
+            console.error("Error:", error);
             throw error;
         }
     }

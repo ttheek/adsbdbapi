@@ -1,4 +1,11 @@
-import { getAircraft, getAirline, getCallsign } from "./api.js";
+/**
+ * Unofficial SDK for adsbdb.
+ *
+ * See more information at:
+ * https://www.adsbdb.com
+ * https://github.com/mrjackwills/adsbdb
+ */
+import { getAircraft, getAirline, getCallsign, modeStoN, nNumberToModeS } from "./api.js";
 import { Aircraft, Airline, Callsign } from "./entities.js";
 
 const author = "T.Theekshana"
@@ -8,6 +15,8 @@ export {
     getAircraft,
     getAirline,
     getCallsign,
+    modeStoN,
+    nNumberToModeS,
     Aircraft,
     Airline,
     Callsign,
