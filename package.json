@@ -1,0 +1,21 @@
+{
+  "name": "adsbdbapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "adsbdb/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "api", 
+    "aviation", 
+    "flights", 
+    "airports",
+    "airlines",
+    "aircraft",
+    "adsb"
+  ],
+  "author": "T.Theekshana",
+  "license": "MIT",
+  "type": "module"
+}
